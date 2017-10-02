@@ -1,0 +1,83 @@
+﻿<Window x:Class="LoLApiTester.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:models="clr-namespace:LoLApiTester.Models"
+        xmlns:jlinq ="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json"
+        xmlns:converters="clr-namespace:LoLApiTester.Converters"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:wpfControlLibrary="clr-namespace:WpfControlLibrary;assembly=WpfControlLibrary"
+        xmlns:enums="clr-namespace:LOLApiAdapter.CommonDefinitions.Enums;assembly=LOLApiAdapter"
+        mc:Ignorable="d"
+        Title="LoL Api Tester" Height="600" Width="800"
+        Background="SteelBlue"
+        WindowState="Maximized">
+    
+    <Window.DataContext>
+        <models:MainWindowViewModel/>
+    </Window.DataContext>
+    
+    <Window.Resources>
+        <converters:MethodToValueConverter x:Key="MethodToValueConverter"/>
+        <HierarchicalDataTemplate DataType="{x:Type jlinq:JArray}" ItemsSource="{Binding Converter={StaticResource MethodToValueConverter}, ConverterParameter='Children'}">
+            <TextBlock Text="Array">
+            </TextBlock>
+        </HierarchicalDataTemplate>
+        <HierarchicalDataTemplate DataType="{x:Type jlinq:JProperty}" ItemsSource="{Binding Converter={StaticResource MethodToValueConverter}, ConverterParameter='Children'}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Path=Name, Mode=OneWay}"/>
+                <TextBlock Text=":"/>
+            </StackPanel>
+        </HierarchicalDataTemplate>
+        <HierarchicalDataTemplate DataType="{x:Type jlinq:JObject}" ItemsSource="{Binding Converter={StaticResource MethodToValueConverter}, ConverterParameter='Children'}">
+            <TextBlock Text="Object">
+            </TextBlock>
+        </HierarchicalDataTemplate>
+        <HierarchicalDataTemplate DataType="{x:Type jlinq:JConstructor}" ItemsSource="{Binding Converter={StaticResource MethodToValueConverter}, ConverterParameter='Children'}">
+            <TextBlock Text="Constructor">
+            </TextBlock>
+        </HierarchicalDataTemplate>
+        <HierarchicalDataTemplate DataType="{x:Type jlinq:JRaw}" ItemsSource="{Binding Converter={StaticResource MethodToValueConverter}, ConverterParameter='Children'}">
+            <TextBlock Text="Raw">
+            </TextBlock>
+        </HierarchicalDataTemplate>
+        <DataTemplate DataType="{x:Type jlinq:JValue}">
+            <TextBox Text="{Binding Path=Value, Mode=TwoWay}"/>
+        </DataTemplate>
+
+        <ObjectDataProvider x:Key="RegionEnum" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="enums:LolApiServerRegion"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>    
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        
+        <TextBox Margin="3" Text="{Binding ApiKey}"/>
+        <ComboBox Margin="3" Grid.Row="1" Grid.Column="0" SelectedItem="{Binding SelectedRegion}" ItemsSource="{Binding Source={StaticResource RegionEnum}}"/>
+        
+        <ComboBox Margin="3" Grid.Row="2" Grid.Column="0" SelectedItem="{Binding SelectedApiType}" ItemsSource="{Binding Source={StaticResource ApiTypesEnum}}"/>
+        <ComboBox Margin="3" Grid.Row="3" Grid.Column="0" SelectedItem="{Binding SelectedApiMethod}" ItemsSource="{Binding CurApiMethods, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+        <TextBox Margin="3" Grid.Row="4" Grid.Column="0" Text="{Binding Argument}" />
+        <Button Margin="3" Grid.Row="5" Content="EXECUTE REQUEST!" Command="{Binding ExecuteRequestCommand}"/>
+
+        <wpfControlLibrary:LogViewerControl Grid.Row="10" LogItemsCollection="{Binding }"/>
+
+        <wpfControlLibrary:JsonViewerControl Margin="3" Grid.Column="1" Grid.RowSpan="10" Json="{Binding Json}"/>
+    </Grid>
+</Window>

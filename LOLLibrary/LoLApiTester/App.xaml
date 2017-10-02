@@ -1,0 +1,15 @@
+﻿<Application x:Class="LoLApiTester.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:LoLApiTester"
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
+             xmlns:enums="clr-namespace:LOLApiAdapter.CommonDefinitions.Enums;assembly=LOLApiAdapter"
+             StartupUri="Views/MainWindowView.xaml">
+    <Application.Resources>
+        <ObjectDataProvider x:Key="ApiTypesEnum" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="enums:LoLApiType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Application.Resources>
+</Application>
